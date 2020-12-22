@@ -108,7 +108,7 @@ final public class MidiPlayer {
 		public void run() {
 			while (true) {
 				synchronized (queue) {
-					while (queue.size() == 0) {
+					if (queue.size() == 0) {
 						try {
 							queue.wait();
 						} catch (final InterruptedException ie) {
@@ -118,7 +118,7 @@ final public class MidiPlayer {
 				}
 				synchronized (queue) {
 					final long delay = queue.peek().getTimeOut() - System.currentTimeMillis();
-					while (delay > 0) {
+					if (delay > 0) {
 						try {
 							queue.wait(delay);
 						} catch (final InterruptedException ie) {
@@ -126,7 +126,7 @@ final public class MidiPlayer {
 					}
 				}
 				synchronized (queue) {
-					while (queue.size() > 0 && queue.peek().getTimeOut() - System.currentTimeMillis() <= 0) {
+					if (queue.size() > 0 && queue.peek().getTimeOut() - System.currentTimeMillis() <= 0) {
 						final Event event = queue.poll();
 						final MidiNote note = event.getNote();
 						synchronized (channel[note.getMidiChannel()]) {
